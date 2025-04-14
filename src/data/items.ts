@@ -1,4 +1,3 @@
-
 export interface Item {
   id: string;
   name: string;
@@ -22,4 +21,9 @@ export const items: Item[] = [
   { id: "13", name: "Kuzhambu Melagu Thool - 1 Kg", price: 1500, unit: "Kg" },
   { id: "14", name: "Garam Masala - ½ Kg", price: 1300, unit: "½ Kg" },
   { id: "15", name: "Oil Can Tray", price: 300, unit: "piece" },
+  { id: "16", name: "Chilli Powder", price: 60, unit: "g" },
+  { id: "17", name: "Turmeric Powder", price: 45, unit: "g" },
+  { id: "18", name: "Coriander Powder", price: 40, unit: "g" },
+  { id: "19", name: "Cumin Powder", price: 55, unit: "g" },
+  { id: "20", name: "Black Pepper Powder", price: 80, unit: "g" },
 ];
