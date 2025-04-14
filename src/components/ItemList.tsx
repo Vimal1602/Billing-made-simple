@@ -55,16 +55,16 @@ export const ItemList: React.FC<ItemListProps> = ({ items, onAddItem }) => {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="text-lg font-bold w-[40%]">Item</TableHead>
-            <TableHead className="text-lg font-bold">Price (INR)</TableHead>
-            <TableHead className="text-lg font-bold">Quantity</TableHead>
-            <TableHead className="text-lg font-bold">Unit</TableHead>
-            <TableHead className="text-lg font-bold">Action</TableHead>
+            <TableHead className="text-base font-bold">Item</TableHead>
+            <TableHead className="text-base font-bold">Price (INR)</TableHead>
+            <TableHead className="text-base font-bold">Quantity</TableHead>
+            <TableHead className="text-base font-bold">Unit</TableHead>
+            <TableHead className="text-base font-bold">Action</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {filteredItems.map((item) => (
-            <TableRow key={item.id} className="text-lg">
+            <TableRow key={item.id} className="text-base">
               <TableCell className="font-medium">{item.name}</TableCell>
               <TableCell>₹{item.price}</TableCell>
               <TableCell className="w-[150px]">

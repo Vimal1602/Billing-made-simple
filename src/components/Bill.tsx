@@ -26,33 +26,31 @@ export const Bill: React.FC<BillProps> = ({ items, isEditing, onRemoveItem }) =>
       <CardContent className="p-6">
         <div className="text-center mb-6">
           <h1 className="text-3xl font-bold mb-2">Jeni Mart</h1>
-          <p className="text-xl text-gray-500 font-semibold">Bill of Sale</p>
+          <p className="text-lg text-gray-500 font-medium">Bill of Sale</p>
         </div>
 
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="text-lg font-bold w-[40%]">Item</TableHead>
-              <TableHead className="text-lg font-bold">Quantity</TableHead>
-              <TableHead className="text-lg font-bold">Price per Quantity (INR)</TableHead>
-              <TableHead className="text-lg font-bold">Total Price (INR)</TableHead>
-              {isEditing && <TableHead className="w-[100px] text-lg font-bold">Action</TableHead>}
+              <TableHead className="text-base font-bold">Item</TableHead>
+              <TableHead className="text-base font-bold">Quantity</TableHead>
+              <TableHead className="text-base font-bold">Price per Quantity (INR)</TableHead>
+              <TableHead className="text-base font-bold">Total Price (INR)</TableHead>
+              {isEditing && <TableHead className="w-[100px] text-base font-bold">Action</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
             {items.map((item) => (
               <TableRow key={item.id} className="text-base">
-                <TableCell className="font-medium text-lg">{item.name}</TableCell>
-                <TableCell className="text-lg">
-                  {item.unit !== 'piece' ? `${item.quantity} ${item.unit}` : ''}
-                </TableCell>
-                <TableCell className="text-lg">₹{item.price}</TableCell>
-                <TableCell className="text-lg">₹{item.price * item.quantity}</TableCell>
+                <TableCell className="font-medium">{item.name}</TableCell>
+                <TableCell>{item.quantity} {item.unit}</TableCell>
+                <TableCell>₹{item.price}</TableCell>
+                <TableCell>₹{item.price * item.quantity}</TableCell>
                 {isEditing && (
                   <TableCell>
                     <button
                       onClick={() => onRemoveItem(item.id)}
-                      className="text-red-500 hover:text-red-700 font-medium text-lg"
+                      className="text-red-500 hover:text-red-700 font-medium"
                     >
                       Remove
                     </button>
@@ -61,18 +59,18 @@ export const Bill: React.FC<BillProps> = ({ items, isEditing, onRemoveItem }) =>
               </TableRow>
             ))}
             <TableRow>
-              <TableCell colSpan={3} className="text-right text-xl font-bold">
+              <TableCell colSpan={3} className="text-right text-lg font-bold">
                 Total
               </TableCell>
-              <TableCell className="text-xl font-bold">₹{total}</TableCell>
+              <TableCell className="text-lg font-bold">₹{total}</TableCell>
               {isEditing && <TableCell />}
             </TableRow>
           </TableBody>
         </Table>
         
         <div className="text-center mt-6">
-          <p className="text-xl font-medium flex items-center justify-center gap-2">
-            Thank you for purchasing <Smile className="inline-block w-7 h-7 text-yellow-500" />
+          <p className="text-lg font-medium flex items-center justify-center gap-2">
+            Thank you for purchasing <Smile className="inline-block w-6 h-6 text-yellow-500" />
           </p>
         </div>
       </CardContent>
