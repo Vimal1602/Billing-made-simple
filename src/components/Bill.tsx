@@ -16,9 +16,15 @@ interface BillProps {
   items: BillItem[];
   isEditing: boolean;
   onRemoveItem: (id: string) => void;
+  isDownloading?: boolean; // New prop to indicate download mode
 }
 
-export const Bill: React.FC<BillProps> = ({ items, isEditing, onRemoveItem }) => {
+export const Bill: React.FC<BillProps> = ({ 
+  items, 
+  isEditing, 
+  onRemoveItem, 
+  isDownloading = false 
+}) => {
   const total = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
   return (
@@ -36,7 +42,7 @@ export const Bill: React.FC<BillProps> = ({ items, isEditing, onRemoveItem }) =>
               <TableHead className="text-base font-bold">Quantity</TableHead>
               <TableHead className="text-base font-bold">Price per Quantity (INR)</TableHead>
               <TableHead className="text-base font-bold">Total Price (INR)</TableHead>
-              {isEditing && <TableHead className="w-[100px] text-base font-bold">Action</TableHead>}
+              {isEditing && !isDownloading && <TableHead className="w-[100px] text-base font-bold">Action</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -46,7 +52,7 @@ export const Bill: React.FC<BillProps> = ({ items, isEditing, onRemoveItem }) =>
                 <TableCell>{item.quantity} {item.unit}</TableCell>
                 <TableCell>₹{item.price}</TableCell>
                 <TableCell>₹{item.price * item.quantity}</TableCell>
-                {isEditing && (
+                {isEditing && !isDownloading && (
                   <TableCell>
                     <button
                       onClick={() => onRemoveItem(item.id)}
@@ -63,7 +69,7 @@ export const Bill: React.FC<BillProps> = ({ items, isEditing, onRemoveItem }) =>
                 Total
               </TableCell>
               <TableCell className="text-lg font-bold">₹{total}</TableCell>
-              {isEditing && <TableCell />}
+              {isEditing && !isDownloading && <TableCell />}
             </TableRow>
           </TableBody>
         </Table>

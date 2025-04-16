@@ -77,6 +77,7 @@ const Index = () => {
             items={billItems}
             isEditing={isEditing}
             onRemoveItem={handleRemoveItem}
+            isDownloading={true} // Pass this prop when rendering for download
           />
         </div>
 
