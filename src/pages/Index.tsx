@@ -1,11 +1,12 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Bill } from '@/components/Bill';
 import { ItemList } from '@/components/ItemList';
 import { items as initialItems } from '@/data/items';
 import html2canvas from 'html2canvas';
 import { Button } from '@/components/ui/button';
-import { Download, Edit } from 'lucide-react';
+import { Download, Edit, Settings } from 'lucide-react';
 
 interface BillItem {
   id: string;
@@ -16,10 +17,33 @@ interface BillItem {
 }
 
 const Index = () => {
+  const navigate = useNavigate();
   const [billItems, setBillItems] = useState<BillItem[]>([]);
   const [isEditing, setIsEditing] = useState(true);
   const [isDownloading, setIsDownloading] = useState(false);
   const billRef = useRef<HTMLDivElement>(null);
+  const [items, setItems] = useState(() => {
+    // Try to load items from localStorage, or use the initial items if not found
+    const savedItems = localStorage.getItem('jeniMartItems');
+    return savedItems ? JSON.parse(savedItems) : initialItems;
+  });
+
+  // Check for updates to items in localStorage
+  useEffect(() => {
+    const checkForUpdates = () => {
+      const savedItems = localStorage.getItem('jeniMartItems');
+      if (savedItems) {
+        setItems(JSON.parse(savedItems));
+      }
+    };
+
+    // Check on component mount and when window regains focus
+    window.addEventListener('focus', checkForUpdates);
+    
+    return () => {
+      window.removeEventListener('focus', checkForUpdates);
+    };
+  }, []);
 
   const handleAddItem = (item: typeof initialItems[0], quantity: number) => {
     const existingItem = billItems.find((i) => i.id === item.id);
@@ -57,6 +81,10 @@ const Index = () => {
     }
   };
 
+  const handleAdminClick = () => {
+    navigate('/admin');
+  };
+
   return (
     <div className="min-h-screen p-6 bg-gray-50">
       <div className="max-w-5xl mx-auto">
@@ -77,6 +105,13 @@ const Index = () => {
               <Download className="w-4 h-4 mr-2" />
               Download Bill
             </Button>
+            <Button
+              variant="secondary"
+              onClick={handleAdminClick}
+            >
+              <Settings className="w-4 h-4 mr-2" />
+              Admin Mode
+            </Button>
           </div>
         </div>
 
@@ -92,7 +127,7 @@ const Index = () => {
         {isEditing && (
           <div className="mt-8">
             <h2 className="text-xl font-semibold mb-4">Add Items</h2>
-            <ItemList items={initialItems} onAddItem={handleAddItem} />
+            <ItemList items={items} onAddItem={handleAddItem} />
           </div>
         )}
       </div>
