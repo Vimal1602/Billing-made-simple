@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -36,10 +35,14 @@ export const ItemList: React.FC<ItemListProps> = ({ items, onAddItem }) => {
   };
 
   const getUnitOptions = (item: Item) => {
-    if (item.unit === "piece" || item.unit === "set") {
-      return [item.unit];
+    switch (item.unit) {
+      case "piece":
+        return ["piece", "Set"];
+      case "set":
+        return ["Set"];
+      default:
+        return ["g", "grams", "Kg"];
     }
-    return ["g", "Kg", "½ Kg"];
   };
 
   return (
