@@ -1,7 +1,10 @@
+
 import React, { useState } from 'react';
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { PlusCircle } from "lucide-react";
 import { Item } from '@/data/items';
 
 interface ItemListProps {
@@ -13,6 +16,8 @@ export const ItemList: React.FC<ItemListProps> = ({ items, onAddItem }) => {
   const [search, setSearch] = useState("");
   const [selectedQuantities, setSelectedQuantities] = useState<{ [key: string]: number }>({});
   const [selectedUnits, setSelectedUnits] = useState<{ [key: string]: string }>({});
+  const [newItemPrice, setNewItemPrice] = useState<number>(0);
+  const [newItemUnit, setNewItemUnit] = useState<string>("piece");
 
   const filteredItems = items.filter(item =>
     item.name.toLowerCase().includes(search.toLowerCase())
@@ -34,16 +39,28 @@ export const ItemList: React.FC<ItemListProps> = ({ items, onAddItem }) => {
     setSelectedQuantities(prev => ({ ...prev, [item.id]: 1 }));
   };
 
-  const getUnitOptions = (item: Item) => {
-    switch (item.unit) {
-      case "piece":
-        return ["piece", "Set"];
-      case "set":
-        return ["Set"];
-      default:
-        return ["g", "grams", "Kg"];
-    }
+  const handleAddNewItem = () => {
+    if (search.trim() === "") return;
+    
+    // Create a new item with a unique ID
+    const newId = `new-${Date.now()}`;
+    const newItem: Item = {
+      id: newId,
+      name: search,
+      price: newItemPrice,
+      unit: newItemUnit
+    };
+    
+    // Add the new item
+    onAddItem(newItem, 1);
+    
+    // Clear the search and reset the price
+    setSearch("");
+    setNewItemPrice(0);
   };
+
+  // Provide all unit options for every item
+  const unitOptions = ["piece", "Set", "g", "grams", "Kg"];
 
   return (
     <div className="w-full">
@@ -55,60 +72,101 @@ export const ItemList: React.FC<ItemListProps> = ({ items, onAddItem }) => {
         onChange={(e) => setSearch(e.target.value)}
       />
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="text-base font-bold">Item</TableHead>
-            <TableHead className="text-base font-bold">Price (INR)</TableHead>
-            <TableHead className="text-base font-bold">Quantity</TableHead>
-            <TableHead className="text-base font-bold">Unit</TableHead>
-            <TableHead className="text-base font-bold">Action</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {filteredItems.map((item) => (
-            <TableRow key={item.id} className="text-base">
-              <TableCell className="font-medium">{item.name}</TableCell>
-              <TableCell>₹{item.price}</TableCell>
-              <TableCell className="w-[150px]">
-                <Input
-                  type="number"
-                  min="0.001"
-                  step="0.001"
-                  value={selectedQuantities[item.id] || 1}
-                  onChange={(e) => handleQuantityChange(item.id, e.target.value)}
-                  className="w-24 text-base"
-                />
-              </TableCell>
-              <TableCell className="w-[150px]">
-                <Select
-                  value={selectedUnits[item.id] || item.unit}
-                  onValueChange={(value) => handleUnitChange(item.id, value)}
-                >
-                  <SelectTrigger className="w-24">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {getUnitOptions(item).map((unit) => (
-                      <SelectItem key={unit} value={unit}>
-                        {unit}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </TableCell>
-              <TableCell>
-                <button
-                  onClick={() => handleAddItem(item)}
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 font-medium"
-                >
-                  Add
-                </button>
-              </TableCell>
+      {search && filteredItems.length === 0 && (
+        <div className="bg-gray-50 p-4 mb-4 rounded-lg border">
+          <p className="mb-2 text-gray-700">No items found matching "{search}"</p>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Input
+              type="number"
+              min="0"
+              step="1"
+              placeholder="Price (INR)"
+              value={newItemPrice || ""}
+              onChange={(e) => setNewItemPrice(Number(e.target.value))}
+              className="w-full sm:w-40"
+            />
+            <Select
+              value={newItemUnit}
+              onValueChange={setNewItemUnit}
+            >
+              <SelectTrigger className="w-full sm:w-32">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {unitOptions.map((unit) => (
+                  <SelectItem key={unit} value={unit}>
+                    {unit}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button 
+              className="flex-1"
+              onClick={handleAddNewItem}
+            >
+              <PlusCircle className="w-4 h-4 mr-2" />
+              Add "{search}" to list
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {filteredItems.length > 0 && (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="text-base font-bold">Item</TableHead>
+              <TableHead className="text-base font-bold">Price (INR)</TableHead>
+              <TableHead className="text-base font-bold">Quantity</TableHead>
+              <TableHead className="text-base font-bold">Unit</TableHead>
+              <TableHead className="text-base font-bold">Action</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {filteredItems.map((item) => (
+              <TableRow key={item.id} className="text-base">
+                <TableCell className="font-medium">{item.name}</TableCell>
+                <TableCell>₹{item.price}</TableCell>
+                <TableCell className="w-[150px]">
+                  <Input
+                    type="number"
+                    min="0.001"
+                    step="0.001"
+                    value={selectedQuantities[item.id] || 1}
+                    onChange={(e) => handleQuantityChange(item.id, e.target.value)}
+                    className="w-24 text-base"
+                  />
+                </TableCell>
+                <TableCell className="w-[150px]">
+                  <Select
+                    value={selectedUnits[item.id] || item.unit}
+                    onValueChange={(value) => handleUnitChange(item.id, value)}
+                  >
+                    <SelectTrigger className="w-24">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {unitOptions.map((unit) => (
+                        <SelectItem key={unit} value={unit}>
+                          {unit}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </TableCell>
+                <TableCell>
+                  <button
+                    onClick={() => handleAddItem(item)}
+                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 font-medium"
+                  >
+                    Add
+                  </button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      )}
     </div>
   );
 };
