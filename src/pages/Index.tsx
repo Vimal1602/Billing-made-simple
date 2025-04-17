@@ -18,6 +18,7 @@ interface BillItem {
 const Index = () => {
   const [billItems, setBillItems] = useState<BillItem[]>([]);
   const [isEditing, setIsEditing] = useState(true);
+  const [isDownloading, setIsDownloading] = useState(false);
   const billRef = useRef<HTMLDivElement>(null);
 
   const handleAddItem = (item: typeof initialItems[0], quantity: number) => {
@@ -40,12 +41,19 @@ const Index = () => {
 
   const downloadBill = async () => {
     if (billRef.current) {
-      const canvas = await html2canvas(billRef.current);
-      const image = canvas.toDataURL('image/jpeg');
-      const link = document.createElement('a');
-      link.href = image;
-      link.download = 'jeni-mart-bill.jpg';
-      link.click();
+      setIsDownloading(true);
+      
+      // Let the UI update before taking screenshot
+      setTimeout(async () => {
+        const canvas = await html2canvas(billRef.current!);
+        const image = canvas.toDataURL('image/jpeg');
+        const link = document.createElement('a');
+        link.href = image;
+        link.download = 'jeni-mart-bill.jpg';
+        link.click();
+        
+        setIsDownloading(false);
+      }, 100);
     }
   };
 
@@ -77,7 +85,7 @@ const Index = () => {
             items={billItems}
             isEditing={isEditing}
             onRemoveItem={handleRemoveItem}
-            isDownloading={true} // Pass this prop when rendering for download
+            isDownloading={isDownloading}
           />
         </div>
 
