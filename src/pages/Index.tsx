@@ -7,6 +7,7 @@ import { items as initialItems } from '@/data/items';
 import html2canvas from 'html2canvas';
 import { Button } from '@/components/ui/button';
 import { Download, Edit, Settings } from 'lucide-react';
+import { toast } from '@/components/ui/sonner';
 
 interface BillItem {
   id: string;
@@ -67,17 +68,31 @@ const Index = () => {
     if (billRef.current) {
       setIsDownloading(true);
       
-      // Let the UI update before taking screenshot
-      setTimeout(async () => {
-        const canvas = await html2canvas(billRef.current!);
-        const image = canvas.toDataURL('image/jpeg');
-        const link = document.createElement('a');
-        link.href = image;
-        link.download = 'jeni-mart-bill.jpg';
-        link.click();
-        
+      try {
+        // Let the UI update before taking screenshot
+        setTimeout(async () => {
+          const canvas = await html2canvas(billRef.current!, {
+            scale: 2, // Higher resolution
+            logging: false,
+            letterRendering: true,
+            useCORS: true,
+            allowTaint: true
+          });
+          
+          const image = canvas.toDataURL('image/jpeg', 1.0); // Use maximum quality
+          const link = document.createElement('a');
+          link.href = image;
+          link.download = 'jeni-mart-bill.jpg';
+          link.click();
+          
+          setIsDownloading(false);
+          toast.success("Bill downloaded successfully!");
+        }, 100);
+      } catch (error) {
+        console.error("Error generating bill image:", error);
+        toast.error("Failed to download bill. Please try again.");
         setIsDownloading(false);
-      }, 100);
+      }
     }
   };
 
@@ -101,9 +116,10 @@ const Index = () => {
             <Button
               variant="default"
               onClick={downloadBill}
+              disabled={isDownloading}
             >
               <Download className="w-4 h-4 mr-2" />
-              Download Bill
+              {isDownloading ? 'Downloading...' : 'Download Bill'}
             </Button>
             <Button
               variant="secondary"

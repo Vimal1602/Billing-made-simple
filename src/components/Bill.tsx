@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -17,7 +16,7 @@ interface BillProps {
   items: BillItem[];
   isEditing: boolean;
   onRemoveItem: (id: string) => void;
-  isDownloading?: boolean; // New prop to indicate download mode
+  isDownloading?: boolean; // Prop to indicate download mode
 }
 
 export const Bill: React.FC<BillProps> = ({ 
@@ -28,7 +27,7 @@ export const Bill: React.FC<BillProps> = ({
 }) => {
   const total = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
-  // Don't use resizable columns when downloading
+  // Use standard table layout with proper spacing for downloading
   if (isDownloading) {
     return (
       <Card className="w-full mb-8">
@@ -38,29 +37,29 @@ export const Bill: React.FC<BillProps> = ({
             <p className="text-lg text-gray-500 font-medium">Bill of Sale</p>
           </div>
 
-          <Table>
+          <Table className="w-full border-collapse">
             <TableHeader>
               <TableRow>
-                <TableHead className="text-base font-bold">Item</TableHead>
-                <TableHead className="text-base font-bold">Quantity</TableHead>
-                <TableHead className="text-base font-bold">Price per Quantity (INR)</TableHead>
-                <TableHead className="text-base font-bold">Total Price (INR)</TableHead>
+                <TableHead className="text-base font-bold p-3 border">Item</TableHead>
+                <TableHead className="text-base font-bold p-3 border">Quantity</TableHead>
+                <TableHead className="text-base font-bold p-3 border">Price per Quantity (INR)</TableHead>
+                <TableHead className="text-base font-bold p-3 border">Total Price (INR)</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {items.map((item) => (
                 <TableRow key={item.id} className="text-base">
-                  <TableCell className="font-medium">{item.name}</TableCell>
-                  <TableCell>{item.quantity} {item.unit}</TableCell>
-                  <TableCell>₹{item.price}</TableCell>
-                  <TableCell>₹{item.price * item.quantity}</TableCell>
+                  <TableCell className="font-medium p-3 border">{item.name}</TableCell>
+                  <TableCell className="p-3 border">{item.quantity} {item.unit}</TableCell>
+                  <TableCell className="p-3 border">₹{item.price}</TableCell>
+                  <TableCell className="p-3 border">₹{item.price * item.quantity}</TableCell>
                 </TableRow>
               ))}
               <TableRow>
-                <TableCell colSpan={3} className="text-right text-lg font-bold">
+                <TableCell colSpan={3} className="text-right text-lg font-bold p-3 border">
                   Total
                 </TableCell>
-                <TableCell className="text-lg font-bold">₹{total}</TableCell>
+                <TableCell className="text-lg font-bold p-3 border">₹{total}</TableCell>
               </TableRow>
             </TableBody>
           </Table>
@@ -75,6 +74,7 @@ export const Bill: React.FC<BillProps> = ({
     );
   }
 
+  // Keep the existing resizable panel layout for interactive mode
   return (
     <Card className="w-full mb-8">
       <CardContent className="p-6">
