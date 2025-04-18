@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Bill } from '@/components/Bill';
@@ -24,12 +23,10 @@ const Index = () => {
   const [isDownloading, setIsDownloading] = useState(false);
   const billRef = useRef<HTMLDivElement>(null);
   const [items, setItems] = useState(() => {
-    // Try to load items from localStorage, or use the initial items if not found
     const savedItems = localStorage.getItem('jeniMartItems');
     return savedItems ? JSON.parse(savedItems) : initialItems;
   });
 
-  // Check for updates to items in localStorage
   useEffect(() => {
     const checkForUpdates = () => {
       const savedItems = localStorage.getItem('jeniMartItems');
@@ -38,9 +35,7 @@ const Index = () => {
       }
     };
 
-    // Check on component mount and when window regains focus
     window.addEventListener('focus', checkForUpdates);
-    
     return () => {
       window.removeEventListener('focus', checkForUpdates);
     };
@@ -65,34 +60,57 @@ const Index = () => {
   };
 
   const downloadBill = async () => {
-    if (billRef.current) {
-      setIsDownloading(true);
+    if (!billRef.current) return;
+    
+    setIsDownloading(true);
+    
+    try {
+      // Create a clone of the bill element and remove action buttons
+      const billClone = billRef.current.cloneNode(true) as HTMLElement;
+      const actionColumns = billClone.querySelectorAll('[data-action-column]');
+      actionColumns.forEach(col => col.remove());
       
-      try {
-        // Let the UI update before taking screenshot
-        setTimeout(async () => {
-          const canvas = await html2canvas(billRef.current!, {
-            scale: 2, // Higher resolution
-            logging: false,
-            letterRendering: true,
-            useCORS: true,
-            allowTaint: true
-          });
-          
-          const image = canvas.toDataURL('image/jpeg', 1.0); // Use maximum quality
-          const link = document.createElement('a');
-          link.href = image;
-          link.download = 'jeni-mart-bill.jpg';
-          link.click();
-          
-          setIsDownloading(false);
-          toast.success("Bill downloaded successfully!");
-        }, 100);
-      } catch (error) {
-        console.error("Error generating bill image:", error);
-        toast.error("Failed to download bill. Please try again.");
-        setIsDownloading(false);
-      }
+      billClone.style.position = 'absolute';
+      billClone.style.left = '-9999px';
+      billClone.style.width = `${billRef.current.offsetWidth}px`;
+      document.body.appendChild(billClone);
+
+      await document.fonts.ready;
+      await new Promise(resolve => setTimeout(resolve, 300));
+
+      const canvas = await html2canvas(billClone, {
+        scale: 3,
+        logging: false,
+        letterRendering: true,
+        useCORS: true,
+        allowTaint: true,
+        windowWidth: billRef.current.scrollWidth,
+        windowHeight: billRef.current.scrollHeight,
+        backgroundColor: '#ffffff',
+        onclone: (clonedDoc) => {
+          clonedDoc.body.style.letterSpacing = 'normal';
+          clonedDoc.body.style.wordSpacing = 'normal';
+          clonedDoc.body.style.textRendering = 'optimizeLegibility';
+          clonedDoc.body.style.webkitFontSmoothing = 'antialiased';
+        }
+      });
+
+      document.body.removeChild(billClone);
+
+      const image = canvas.toDataURL('image/png', 1.0);
+      const link = document.createElement('a');
+      link.href = image;
+      link.download = 'jeni-mart-bill.png';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      setIsDownloading(false);
+      toast.success("Bill downloaded successfully!");
+    } catch (error) {
+      console.error("Error generating bill image:", error);
+      toast.error("Failed to download bill. Please try again.");
+      setIsDownloading(false);
     }
   };
 
@@ -131,7 +149,15 @@ const Index = () => {
           </div>
         </div>
 
-        <div ref={billRef} className="bg-white p-6 rounded-lg shadow-sm">
+        <div 
+          ref={billRef} 
+          className="bg-white p-6 rounded-lg shadow-sm"
+          style={{
+            fontFamily: "'Helvetica Neue', Arial, sans-serif",
+            letterSpacing: 'normal',
+            wordSpacing: 'normal'
+          }}
+        >
           <Bill
             items={billItems}
             isEditing={isEditing}

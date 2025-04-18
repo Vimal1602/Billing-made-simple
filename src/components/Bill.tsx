@@ -33,22 +33,22 @@ export const Bill: React.FC<BillProps> = ({
       <Card className="w-full mb-8">
         <CardContent className="p-6">
           <div className="text-center mb-6">
-            <h1 className="text-3xl font-bold mb-2">Jeni Mart</h1>
+            <h1 className="text-3xl font-bold mb-12">Jeni Mart</h1>
             <p className="text-lg text-gray-500 font-medium">Bill of Sale</p>
           </div>
 
           <Table className="w-full border-collapse">
             <TableHeader>
               <TableRow>
-                <TableHead className="text-base font-bold p-3 border">Item</TableHead>
-                <TableHead className="text-base font-bold p-3 border">Quantity</TableHead>
-                <TableHead className="text-base font-bold p-3 border">Price per Quantity (INR)</TableHead>
-                <TableHead className="text-base font-bold p-3 border">Total Price (INR)</TableHead>
+                <TableHead className="text-xl font-bold p-3 border">Item</TableHead>
+                <TableHead className="text-xl font-bold p-3 border">Quantity</TableHead>
+                <TableHead className="text-xl font-bold p-3 border">Cost per Item</TableHead>
+                <TableHead className="text-xl font-bold p-3 border">Total</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {items.map((item) => (
-                <TableRow key={item.id} className="text-base">
+                <TableRow key={item.id} className="text-xl">
                   <TableCell className="font-medium p-3 border">{item.name}</TableCell>
                   <TableCell className="p-3 border">{item.quantity} {item.unit}</TableCell>
                   <TableCell className="p-3 border">₹{item.price}</TableCell>
@@ -66,7 +66,7 @@ export const Bill: React.FC<BillProps> = ({
           
           <div className="text-center mt-6">
             <p className="text-lg font-medium flex items-center justify-center gap-2">
-              Thank you for purchasing <Smile className="inline-block w-6 h-6 text-yellow-500" />
+              Thank you for purchasing 
             </p>
           </div>
         </CardContent>
@@ -80,15 +80,15 @@ export const Bill: React.FC<BillProps> = ({
       <CardContent className="p-6">
         <div className="text-center mb-6">
           <h1 className="text-3xl font-bold mb-2">Jeni Mart</h1>
-          <p className="text-lg text-gray-500 font-medium">Bill of Sale</p>
+          {/* <p className="text-lg text-gray-500 font-medium">Bill of Sale</p> */}
         </div>
 
         <div className="w-full">
           <ResizablePanelGroup direction="horizontal" className="w-full">
             <ResizablePanel defaultSize={30} minSize={20}>
-              <div className="text-base font-bold p-3 border-b">Item</div>
+              <div className="text-xl font-bold p-3 border-b">Item</div>
               {items.map((item) => (
-                <div key={item.id} className="text-base p-3 border-b font-medium">{item.name}</div>
+                <div key={item.id} className="text-xl p-3 border-b font-medium">{item.name}</div>
               ))}
               <div className="text-lg font-bold p-3 border-b text-right">Total</div>
             </ResizablePanel>
@@ -96,9 +96,9 @@ export const Bill: React.FC<BillProps> = ({
             <ResizableHandle withHandle />
             
             <ResizablePanel defaultSize={20} minSize={15}>
-              <div className="text-base font-bold p-3 border-b">Quantity</div>
+              <div className="text-xl font-bold p-3 border-b">Quantity</div>
               {items.map((item) => (
-                <div key={item.id} className="text-base p-3 border-b">{item.quantity} {item.unit}</div>
+                <div key={item.id} className="text-xl p-3 border-b">{item.quantity} {item.unit}</div>
               ))}
               <div className="text-lg font-bold p-3 border-b"></div>
             </ResizablePanel>
@@ -106,9 +106,9 @@ export const Bill: React.FC<BillProps> = ({
             <ResizableHandle withHandle />
             
             <ResizablePanel defaultSize={25} minSize={15}>
-              <div className="text-base font-bold p-3 border-b">Price (INR)</div>
+              <div className="text-xl font-bold p-3 border-b">Price (INR)</div>
               {items.map((item) => (
-                <div key={item.id} className="text-base p-3 border-b">₹{item.price}</div>
+                <div key={item.id} className="text-xl p-3 border-b">₹{item.price}</div>
               ))}
               <div className="text-lg font-bold p-3 border-b"></div>
             </ResizablePanel>
@@ -116,39 +116,37 @@ export const Bill: React.FC<BillProps> = ({
             <ResizableHandle withHandle />
             
             <ResizablePanel defaultSize={25} minSize={15}>
-              <div className="text-base font-bold p-3 border-b">Total Price (INR)</div>
+              <div className="text-xl font-bold p-3 border-b">Total Price (INR)</div>
               {items.map((item) => (
-                <div key={item.id} className="text-base p-3 border-b">₹{item.price * item.quantity}</div>
+                <div key={item.id} className="text-xl p-3 border-b">₹{item.price * item.quantity}</div>
               ))}
               <div className="text-lg font-bold p-3 border-b">₹{total}</div>
             </ResizablePanel>
-            
-            {isEditing && (
-              <>
-                <ResizableHandle withHandle />
-                
-                <ResizablePanel defaultSize={15} minSize={10}>
-                  <div className="text-base font-bold p-3 border-b">Action</div>
-                  {items.map((item) => (
-                    <div key={item.id} className="text-base p-3 border-b">
-                      <button
-                        onClick={() => onRemoveItem(item.id)}
-                        className="text-red-500 hover:text-red-700 font-medium"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  ))}
-                  <div className="text-lg font-bold p-3 border-b"></div>
-                </ResizablePanel>
-              </>
-            )}
+{isEditing && (
+  <>
+    <ResizableHandle withHandle />
+    <ResizablePanel defaultSize={15} minSize={10} data-action-column>
+      <div className="text-xl font-bold p-3 border-b">Action</div>
+      {items.map((item) => (
+        <div key={item.id} className="text-xl p-3 border-b">
+          <button
+            onClick={() => onRemoveItem(item.id)}
+            className="text-red-500 hover:text-red-700 font-medium"
+          >
+            Remove
+          </button>
+        </div>
+      ))}
+      <div className="text-lg font-bold p-3 border-b"></div>
+    </ResizablePanel>
+  </>
+)}
           </ResizablePanelGroup>
         </div>
         
         <div className="text-center mt-6">
           <p className="text-lg font-medium flex items-center justify-center gap-2">
-            Thank you for purchasing <Smile className="inline-block w-6 h-6 text-yellow-500" />
+            Thank you for purchasing 
           </p>
         </div>
       </CardContent>

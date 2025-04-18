@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { Item } from '@/data/items';
+import { motion, AnimatePresence } from "framer-motion";
 
 interface ItemListProps {
   items: Item[];
@@ -13,6 +14,7 @@ interface ItemListProps {
 }
 
 export const ItemList: React.FC<ItemListProps> = ({ items, onAddItem }) => {
+  const [clickedButtons, setClickedButtons] = useState<{ [key: string]: boolean }>({});
   const [search, setSearch] = useState("");
   const [selectedQuantities, setSelectedQuantities] = useState<{ [key: string]: number }>({});
   const [selectedUnits, setSelectedUnits] = useState<{ [key: string]: string }>({});
@@ -35,9 +37,17 @@ export const ItemList: React.FC<ItemListProps> = ({ items, onAddItem }) => {
   const handleAddItem = (item: Item) => {
     const quantity = selectedQuantities[item.id] || 1;
     const unit = selectedUnits[item.id] || item.unit;
+  
     onAddItem({ ...item, unit }, quantity);
     setSelectedQuantities(prev => ({ ...prev, [item.id]: 1 }));
+  
+    // Mark button as clicked
+    setClickedButtons(prev => ({ ...prev, [item.id]: true }));
+  
+    // Show toast
+    toast.success(`${item.name} added successfully!`);
   };
+  
 
   const handleAddNewItem = () => {
     if (search.trim() === "") return;
@@ -155,13 +165,18 @@ export const ItemList: React.FC<ItemListProps> = ({ items, onAddItem }) => {
                   </Select>
                 </TableCell>
                 <TableCell>
-                  <button
-                    onClick={() => handleAddItem(item)}
-                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 font-medium"
-                  >
-                    Add
-                  </button>
-                </TableCell>
+  <button
+    onClick={() => handleAddItem(item)}
+    className={`px-4 py-2 rounded font-medium transition-colors duration-200 ${
+      clickedButtons[item.id]
+        ? "bg-green-700 transition-colors duration-200 text-white"
+        : "bg-blue-500 text-white hover:bg-blue-600"
+    }`}
+  >
+    Add
+  </button>
+</TableCell>
+
               </TableRow>
             ))}
           </TableBody>
